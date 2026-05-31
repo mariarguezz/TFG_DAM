@@ -1,0 +1,222 @@
+{% extends 'mypark/admin_base.html' %}
+
+{% block titulo %}Dashboard{% endblock %}
+{% block menu_inicio %}class="active"{% endblock %}
+
+{% block estilos %}
+.mapa-tabla {
+    border-collapse: separate;
+    border-spacing: 3px 6px;
+    width: 100%;
+}
+.mapa-tabla th {
+    font-size: 12px;
+    color: #666666;
+    font-weight: 600;
+    text-align: center;
+    padding: 4px 0px;
+    white-space: nowrap;
+    width: 80px;
+    min-width: 80px;
+}
+.mapa-tabla th:first-child {
+    width: 45px;
+    min-width: 45px;
+    text-align: left;
+}
+.mapa-tabla td { padding: 0px; }
+.plaza-label {
+    font-size: 13px;
+    color: #333333;
+    padding-right: 8px;
+    white-space: nowrap;
+    font-weight: bold;
+}
+.franja {
+    width: 100%;
+    height: 22px;
+    border-radius: 6px;
+    display: block;
+    margin: 0;
+}
+.franja:hover { opacity: 0.85; cursor: pointer; }
+.libre { background-color: #4CAF50; }
+.ocupada { background-color: #F44336; }
+.leyenda-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-right: 4px;
+}
+.btn-fecha {
+    background: linear-gradient(135deg, #e94560, #c0392b);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+}
+.fecha-nav a {
+    color: #e94560;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+}
+.fecha-nav a:hover { transform: scale(1.3); }
+{% endblock %}
+
+{% block contenido %}
+<div class="card-admin">
+
+    <!-- ESTADÍSTICAS POR TIPO -->
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+        {% for stat in stats_tipos %}
+        <div style="flex:1; min-width:160px; background:white; border-radius:12px; padding:16px 20px; border:1px solid #F0F0F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <div style="font-size:15px; font-weight:700; color:#444; margin-bottom:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                {{ stat.icono }} {{ stat.nombre }}
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="text-align:center;">
+                    <div style="font-size:22px; font-weight:700; color:#4CAF50;">{{ stat.libres }}</div>
+                    <div style="font-size:12px; color:#888; text-transform:uppercase;">Libres</div>
+                </div>
+                <div style="width:1px; height:40px; background:#F0F0F0;"></div>
+                <div style="text-align:center;">
+                    <div style="font-size:22px; font-weight:700; color:#e94560;">{{ stat.ocupadas }}</div>
+                    <div style="font-size:12px; color:#888; text-transform:uppercase;">Ocupadas</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- TÍTULO Y LEYENDA -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center gap-4">
+            <h2 class="mb-0">Mapa de plazas</h2>
+            <span><span class="leyenda-box libre"></span><small>Libre</small></span>
+            <span><span class="leyenda-box ocupada"></span><small>Ocupada</small></span>
+        </div>
+
+        <!-- BOTÓN FILTROS -->
+        <div class="dropdown">
+            <button class="btn btn-sm dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown" aria-expanded="false"
+                    style="background:transparent; border:none; padding:8px;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="1" y="1" width="7" height="7" rx="2" fill="#e94560"/>
+                    <rect x="12" y="1" width="7" height="7" rx="2" fill="#e94560"/>
+                    <rect x="1" y="12" width="7" height="7" rx="2" fill="#e94560"/>
+                    <rect x="12" y="12" width="7" height="7" rx="2" fill="#e94560"/>
+                </svg>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-3" style="width:250px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+                <form method="get">
+                    <input type="hidden" name="fecha" value="{{ fecha }}">
+                    <label style="font-size:12px; color:#888; font-weight:600;">TIPO DE PLAZA</label>
+                    <select name="tipo" class="form-select form-select-sm mb-3" style="border-radius:8px;">
+                        <option value="todas" {% if tipo_filtro == "todas" %}selected{% endif %}>Todas</option>
+                        {% for tipo in tipos %}
+                        <option value="{{ tipo.nombre }}" {% if tipo_filtro == tipo.nombre %}selected{% endif %}>{{ tipo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <label style="font-size:12px; color:#888; font-weight:600;">ORDENACIÓN</label>
+                    <select name="orden" class="form-select form-select-sm mb-3" style="border-radius:8px;">
+                        <option value="asc" {% if orden == "asc" %}selected{% endif %}>A → Z</option>
+                        <option value="desc" {% if orden == "desc" %}selected{% endif %}>Z → A</option>
+                    </select>
+                    <label style="font-size:12px; color:#888; font-weight:600;">DISPONIBILIDAD</label>
+                    <select name="disponibilidad" class="form-select form-select-sm mb-3" style="border-radius:8px;">
+                        <option value="todas" {% if disponibilidad_filtro == "todas" %}selected{% endif %}>Todas</option>
+                        <option value="libres" {% if disponibilidad_filtro == "libres" %}selected{% endif %}>Solo libres</option>
+                        <option value="ocupadas" {% if disponibilidad_filtro == "ocupadas" %}selected{% endif %}>Solo ocupadas</option>
+                    </select>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-sm flex-grow-1"
+                                style="background:linear-gradient(135deg,#e94560,#c0392b); color:white; border-radius:8px;">
+                            Aplicar
+                        </button>
+                        <a href="?fecha={{ fecha }}" class="btn btn-sm btn-outline-secondary flex-grow-1"
+                           style="border-radius:8px;">
+                            Resetear
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SELECTOR DE FECHA -->
+    <form method="get" class="mb-4">
+        <div class="d-flex align-items-center gap-2 fecha-nav">
+            <a href="?fecha={{ fecha_anterior }}&pagina=1">&#60;</a>
+            <span style="min-width:220px; text-align:center;">{{ fecha_display }}</span>
+            <a href="?fecha={{ fecha_siguiente }}&pagina=1">&#62;</a>
+            <div style="position:relative; width:36px; height:36px;">
+                <button type="button" class="btn-fecha">📅</button>
+                <input type="date" name="fecha" value="{{ fecha }}"
+                       onchange="this.form.submit()"
+                       style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;">
+            </div>
+        </div>
+    </form>
+
+    <!-- MAPA DE PLAZAS -->
+    <div class="table-responsive">
+        <table class="mapa-tabla">
+            <thead>
+                <tr>
+                    <th style="min-width:50px;"></th>
+                    {% for hora in horas %}
+                    <th>{{ hora }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in mapa %}
+                <tr>
+                    <td>
+                        {% if 'E' == fila.plaza.numero_plaza|slice:":1" and 'M' != fila.plaza.numero_plaza|slice:"1:2" %}
+                            <span style="background:#E0F7FA; color:#00838F; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700;">{{ fila.plaza.numero_plaza }}</span>
+                        {% elif 'P' == fila.plaza.numero_plaza|slice:":1" and 'M' != fila.plaza.numero_plaza|slice:"1:2" %}
+                            <span style="background:#F3E5F5; color:#6A1B9A; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700;">{{ fila.plaza.numero_plaza }}</span>
+                        {% elif 'V' == fila.plaza.numero_plaza|slice:":1" %}
+                            <span style="background:#FFF3E0; color:#F57C00; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700;">{{ fila.plaza.numero_plaza }}</span>
+                        {% else %}
+                            <span style="background:#E3F2FD; color:#1565C0; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700;">{{ fila.plaza.numero_plaza }}</span>
+                        {% endif %}
+                    </td>
+                    {% for franja in fila.franjas %}
+                    <td colspan="{{ franja.span }}" style="padding:3px 0;">
+                        <div class="franja {% if franja.ocupada %}ocupada{% else %}libre{% endif %}"></div>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINACIÓN -->
+    <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+        {% if mapa.has_previous %}
+        <a href="?fecha={{ fecha }}&pagina={{ mapa.previous_page_number }}"
+           class="fw-bold" style="text-decoration:none; color:#e94560;">&#60;</a>
+        {% else %}
+        <span class="fw-bold text-muted">&#60;</span>
+        {% endif %}
+
+        <span>{{ mapa.number }} / {{ paginator.num_pages }}</span>
+
+        {% if mapa.has_next %}
+        <a href="?fecha={{ fecha }}&pagina={{ mapa.next_page_number }}"
+           class="fw-bold" style="text-decoration:none; color:#e94560;">&#62;</a>
+        {% else %}
+        <span class="fw-bold text-muted">&#62;</span>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

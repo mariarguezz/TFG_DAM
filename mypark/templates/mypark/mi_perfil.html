@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyPark — Mi Perfil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #EEF2F7;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar-mypark {
+            background: linear-gradient(135deg, #1a6fb5, #2196F3, #7EB8F7);
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+            box-shadow: 0 4px 20px rgba(33,150,243,0.3);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #navbar-brand {
+            font-size: 22px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        #navbar-brand:hover { opacity: 0.9; }
+        .navbar-user {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        .navbar-username {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .btn-logout {
+            color: white;
+            font-size: 13px;
+            text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.2s ease;
+        }
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.30);
+            transform: scale(1.05);
+        }
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+        #sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: #FFFFFF;
+            border-right: 1px solid #E0E0E0;
+            padding-top: 20px;
+            overflow: hidden;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.08);
+            transition: width 0.4s ease, min-width 0.4s ease, opacity 0.4s ease;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 20px;
+            color: #555555;
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            border-radius: 0 8px 8px 0;
+            margin-right: 8px;
+        }
+        .sidebar a:hover {
+            background-color: #EEF2F7;
+            color: #5a9fd4;
+            border-left: 3px solid #5a9fd4;
+            padding-left: 28px;
+        }
+        .sidebar a.active {
+            color: #5a9fd4;
+            font-weight: bold;
+            border-left: 3px solid #5a9fd4;
+            background: linear-gradient(135deg, #f0f7ff, #e8f4ff);
+        }
+        #contenido-principal {
+            flex: 1;
+            padding: 24px;
+            overflow: auto;
+        }
+        .card-perfil {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 32px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .avatar-perfil {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7EB8F7, #5a9fd4);
+            color: white;
+            font-weight: bold;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .campo-perfil {
+            background: #F8FAFF;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+        }
+        .campo-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .campo-valor {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+        .badge-rol {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-empleado {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+        .badge-administrador {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+        @media (max-width: 768px) {
+            #contenido-principal {
+                width: 100% !important;
+                flex: 1 !important;
+                padding: 16px !important;
+            }
+            .navbar-username { display: none; }
+            .card-perfil {
+                padding: 20px;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- BARRA DE NAVEGACIÓN -->
+<nav class="navbar-mypark">
+    <span id="navbar-brand">🅿️ MyPark</span>
+    <div class="navbar-user">
+        {% if usuario.foto %}
+        <img src="{{ usuario.foto.url }}"
+             style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.5);">
+        {% else %}
+        <div class="avatar">{{ request.user.username|first|upper }}</div>
+        {% endif %}
+        <span class="navbar-username">{{ request.user.username }}</span>
+        <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+    <!-- MENÚ LATERAL -->
+    <div id="sidebar" class="sidebar">
+        <a href="{% url 'dashboard' %}">🏠 Inicio</a>
+        <a href="{% url 'mis_reservas' %}">📅 Mis reservas</a>
+        <a href="{% url 'nueva_reserva' %}">➕ Nueva reserva</a>
+        <a href="{% url 'mi_perfil' %}" class="active">👤 Mi perfil</a>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="contenido-principal">
+        <div class="card-perfil">
+
+            <!-- AVATAR -->
+            <div class="text-center">
+                {% if usuario.foto %}
+                <img src="{{ usuario.foto.url }}"
+                     style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid #7EB8F7; margin-bottom:16px;">
+                {% else %}
+                <div class="avatar-perfil">
+                    {{ usuario.username|first|upper }}
+                </div>
+                {% endif %}
+
+                <!-- FORMULARIO FOTO -->
+                <form method="post" enctype="multipart/form-data" style="margin-bottom:16px;">
+                    {% csrf_token %}
+                    <label for="foto" style="cursor:pointer;">
+                        <span style="font-size:12px; color:#7EB8F7; font-weight:600;">
+                            ✏️ Cambiar foto
+                        </span>
+                    </label>
+                    <input type="file" id="foto" name="foto" accept="image/*"
+                           style="display:none;"
+                           onchange="this.form.submit()">
+                </form>
+
+                <h3 class="mb-1">{{ usuario.get_full_name|default:usuario.username }}</h3>
+                <p style="color:#888; font-size:13px;">{{ usuario.email|default:"Sin email" }}</p>
+            </div>
+
+            <!-- DATOS -->
+            <div class="campo-perfil">
+                <div class="campo-label">Nombre de usuario</div>
+                <div class="campo-valor">{{ usuario.username }}</div>
+            </div>
+
+            <div class="campo-perfil">
+                <div class="campo-label">Nombre completo</div>
+                <div class="campo-valor">{{ usuario.get_full_name|default:"No especificado" }}</div>
+            </div>
+
+            <div class="campo-perfil">
+                <div class="campo-label">Email</div>
+                <div class="campo-valor">{{ usuario.email|default:"No especificado" }}</div>
+            </div>
+
+            <div class="campo-perfil">
+                <div class="campo-label">Rol</div>
+                <div class="campo-valor">
+                    {% if usuario.rol == "administrador" %}
+                        <span class="badge-rol badge-administrador">Administrador</span>
+                    {% else %}
+                        <span class="badge-rol badge-empleado">Empleado</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="campo-perfil">
+                <div class="campo-label">Miembro desde</div>
+                <div class="campo-valor">{{ usuario.date_joined|date:"d/m/Y" }}</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="overlay" style="display:none; position:fixed; top:64px; left:0; width:100%; height:calc(100vh - 64px); background:rgba(0,0,0,0.4); z-index:998;"></div>
+
+<script>
+    const navbar = document.getElementById('navbar-brand');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function isMobile() { return window.innerWidth <= 768; }
+
+    function initMenu() {
+        if (isMobile()) {
+            sidebar.style.width = '0';
+            sidebar.style.minWidth = '0';
+            sidebar.style.opacity = '0';
+            sidebar.style.position = 'fixed';
+            sidebar.style.top = '64px';
+            sidebar.style.height = 'calc(100vh - 64px)';
+            sidebar.style.zIndex = '999';
+        } else {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            sidebar.style.position = 'relative';
+            sidebar.style.top = '';
+            sidebar.style.height = '';
+            sidebar.style.zIndex = '';
+        }
+    }
+
+    initMenu();
+    window.addEventListener('resize', initMenu);
+    let menuVisible = !isMobile();
+
+    navbar.addEventListener('click', function() {
+        menuVisible = !menuVisible;
+        if (menuVisible) {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            if (isMobile()) overlay.style.display = 'block';
+        } else {
+            sidebar.style.width = '0';
+            sidebar.style.minWidth = '0';
+            sidebar.style.opacity = '0';
+            overlay.style.display = 'none';
+        }
+    });
+
+    overlay.addEventListener('click', function() {
+        menuVisible = false;
+        sidebar.style.width = '0';
+        sidebar.style.minWidth = '0';
+        sidebar.style.opacity = '0';
+        overlay.style.display = 'none';
+    });
+
+    window.addEventListener('resize', function() {
+        if (!isMobile()) {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            overlay.style.display = 'none';
+            menuVisible = true;
+        }
+    });
+</script>
+</body>
+</html>

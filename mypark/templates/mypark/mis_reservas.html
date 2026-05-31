@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyPark — Mis Reservas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #EEF2F7;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar-mypark {
+            background: linear-gradient(135deg, #1a6fb5, #2196F3, #7EB8F7);
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+            box-shadow: 0 4px 20px rgba(33,150,243,0.3);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #navbar-brand {
+            font-size: 22px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        #navbar-brand:hover { opacity: 0.9; }
+        .navbar-user {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        .navbar-username {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .btn-logout {
+            color: white;
+            font-size: 13px;
+            text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.2s ease;
+        }
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.30);
+            transform: scale(1.05);
+        }
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+        #sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: #FFFFFF;
+            border-right: 1px solid #E0E0E0;
+            padding-top: 20px;
+            overflow: hidden;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.08);
+            transition: width 0.4s ease, min-width 0.4s ease, opacity 0.4s ease;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 20px;
+            color: #555555;
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            border-radius: 0 8px 8px 0;
+            margin-right: 8px;
+        }
+        .sidebar a:hover {
+            background-color: #EEF2F7;
+            color: #5a9fd4;
+            border-left: 3px solid #5a9fd4;
+            padding-left: 28px;
+        }
+        .sidebar a.active {
+            color: #5a9fd4;
+            font-weight: bold;
+            border-left: 3px solid #5a9fd4;
+            background: linear-gradient(135deg, #f0f7ff, #e8f4ff);
+        }
+        #contenido-principal {
+            flex: 1;
+            padding: 24px;
+            overflow: auto;
+        }
+        .card-tabla {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 24px;
+        }
+        .tabla-reservas {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tabla-reservas th {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #7EB8F7, #5a9fd4);
+            padding: 12px 16px;
+            text-align: center;
+        }
+        .tabla-reservas th:first-child { border-radius: 8px 0 0 8px; }
+        .tabla-reservas th:last-child { border-radius: 0 8px 8px 0; }
+        .tabla-reservas td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #444;
+            border-bottom: 1px solid #F0F0F0;
+            text-align: center;
+        }
+        .tabla-reservas tr:hover td {
+            background-color: #F8FAFF;
+        }
+        .badge-tipo {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .badge-estandar { background:#F3E5F5; color:#6A1B9A; }
+        .badge-electrica { background:#E0F7FA; color:#00838F; }
+        .badge-pmr { background:#E3F2FD; color:#1565C0; }
+        .badge-visita { background:#FFF3E0; color:#F57C00; }
+        .btn-cancelar {
+            background: #FFEBEE;
+            color: #F44336;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-cancelar:hover {
+            background: #F44336;
+            color: white;
+            transform: scale(1.05);
+        }
+        .badge-visita-si {
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .badge-visita-no {
+            background: #F5F5F5;
+            color: #888;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        /* RESPONSIVE MÓVIL */
+        @media (max-width: 768px) {
+        #contenido-principal {
+            width: 100% !important;
+            flex: 1 !important;
+            padding: 16px !important;
+        }
+        .navbar-username { display: none; }
+        .card-tabla { padding: 16px; }
+        .tabla-reservas thead { display: none; }
+        .tabla-reservas tr {
+            display: block;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #F0F0F0;
+        }
+        .tabla-reservas td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #F5F5F5;
+            font-size: 13px;
+        }
+        .tabla-reservas td:last-child { border-bottom: none; }
+        .tabla-reservas td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .reserva-pasada {
+            opacity: 0.6;
+        }
+        .reserva-pasada td {
+            background-color: #F9F9F9 !important;
+        }
+        .badge-pasada {
+            background: #F5F5F5;
+            color: #888;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-futura {
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- BARRA DE NAVEGACIÓN -->
+<nav class="navbar-mypark">
+    <span id="navbar-brand">🅿️ MyPark</span>
+    <div class="navbar-user">
+        {% if request.user.foto %}
+        <img src="{{ request.user.foto.url }}"
+             style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.5);">
+        {% else %}
+        <div class="avatar">{{ request.user.username|first|upper }}</div>
+        {% endif %}
+        <span class="navbar-username">{{ request.user.username }}</span>
+        <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+    <!-- MENÚ LATERAL -->
+    <div id="sidebar" class="sidebar">
+        <a href="{% url 'dashboard' %}">🏠 Inicio</a>
+        <a href="{% url 'mis_reservas' %}" class="active">📅 Mis reservas</a>
+        <a href="{% url 'nueva_reserva' %}">➕ Nueva reserva</a>
+        <a href="{% url 'mi_perfil' %}">👤 Mi perfil</a>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="contenido-principal">
+        <div class="card-tabla">
+
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="mb-0">Mis reservas</h2>
+                <div class="d-flex align-items-center gap-2">
+
+                    <!-- BOTÓN FILTROS -->
+                    <div class="dropdown">
+                        <button class="btn btn-sm dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false"
+                                style="background:transparent; border:none; padding:8px;">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="1" y="1" width="7" height="7" rx="2" fill="#5a9fd4"/>
+                                <rect x="12" y="1" width="7" height="7" rx="2" fill="#5a9fd4"/>
+                                <rect x="1" y="12" width="7" height="7" rx="2" fill="#5a9fd4"/>
+                                <rect x="12" y="12" width="7" height="7" rx="2" fill="#5a9fd4"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-3" style="width:260px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+                            <form method="get">
+
+                                <label style="font-size:12px; color:#888; font-weight:600;">TIPO DE PLAZA</label>
+                                <select name="tipo" class="form-select form-select-sm mb-3" style="border-radius:8px;">
+                                    <option value="todas" {% if tipo_filtro == 'todas' %}selected{% endif %}>Todas</option>
+                                    {% for tipo in tipos %}
+                                    <option value="{{ tipo.nombre }}" {% if tipo_filtro == tipo.nombre %}selected{% endif %}>{{ tipo.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <label style="font-size:12px; color:#888; font-weight:600;">ESTADO</label>
+                                <select name="estado" class="form-select form-select-sm mb-3" style="border-radius:8px;">
+                                    <option value="todas" {% if estado_filtro == 'todas' %}selected{% endif %}>Todas</option>
+                                    <option value="futuras" {% if estado_filtro == 'futuras' %}selected{% endif %}>Futuras</option>
+                                    <option value="pasadas" {% if estado_filtro == 'pasadas' %}selected{% endif %}>Pasadas</option>
+                                </select>
+
+                                <label style="font-size:12px; color:#888; font-weight:600;">VISITA EXTERNA</label>
+                                <select name="visita" class="form-select form-select-sm mb-3" style="border-radius:8px;">
+                                    <option value="todas" {% if visita_filtro == 'todas' %}selected{% endif %}>Todas</option>
+                                    <option value="si" {% if visita_filtro == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if visita_filtro == 'no' %}selected{% endif %}>No</option>
+                                </select>
+
+                                <label style="font-size:12px; color:#888; font-weight:600;">FECHA</label>
+                                <input type="date" name="fecha" value="{{ fecha_filtro }}"
+                                       class="form-control form-control-sm mb-3" style="border-radius:8px;">
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-sm flex-grow-1"
+                                            style="background:linear-gradient(135deg,#7EB8F7,#5a9fd4); color:white; border-radius:8px;">
+                                        Aplicar
+                                    </button>
+                                    <a href="{% url 'mis_reservas' %}" class="btn btn-sm btn-outline-secondary flex-grow-1"
+                                       style="border-radius:8px;">
+                                        Resetear
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'nueva_reserva' %}"
+                       style="background:linear-gradient(135deg,#7EB8F7,#5a9fd4); color:white; border-radius:8px; padding:10px 20px; text-decoration:none; font-size:13px; font-weight:600;">
+                        ➕ Nueva reserva
+                    </a>
+                </div>
+            </div>
+
+            {% if reservas %}
+            <table class="tabla-reservas">
+                <thead>
+                    <tr>
+                        <th>Plaza</th>
+                        <th>Estado</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Matrícula</th>
+                        <th>Visita</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   {% for reserva in reservas %}
+                    <tr {% if reserva.fecha < hoy %}class="reserva-pasada"{% endif %}>
+                        <td>
+                            {% if reserva.plaza.numero_plaza|slice:":3" == "PMR" %}
+                                <span style="background:#E3F2FD; color:#1565C0; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700;">{{ reserva.plaza.numero_plaza }}</span>
+                            {% elif reserva.plaza.numero_plaza|slice:":1" == "E" %}
+                                <span style="background:#E0F7FA; color:#00838F; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700;">{{ reserva.plaza.numero_plaza }}</span>
+                            {% elif reserva.plaza.numero_plaza|slice:":1" == "V" %}
+                                <span style="background:#FFF8F0; color:#F57C00; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700;">{{ reserva.plaza.numero_plaza }}</span>
+                            {% else %}
+                                <span style="background:#F3E5F5; color:#6A1B9A; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700;">{{ reserva.plaza.numero_plaza }}</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Estado">
+                            {% if reserva.fecha < hoy %}
+                                <span style="background:#F5F5F5; color:#888; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                                    ⏹ Finalizada
+                                </span>
+                            {% elif reserva.fecha == hoy %}
+                                <span style="background:#FFF8E1; color:#F57F17; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                                    ⚡ Hoy
+                                </span>
+                            {% else %}
+                                <span style="background:#E8F5E9; color:#2E7D32; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                                    ● Próxima
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Tipo">
+                            {% if reserva.plaza.tipo_plaza.nombre == 'Estándar' %}
+                                <span class="badge-tipo badge-estandar">{{ reserva.plaza.tipo_plaza.nombre }}</span>
+                            {% elif reserva.plaza.tipo_plaza.nombre == 'Eléctrica' %}
+                                <span class="badge-tipo badge-electrica">{{ reserva.plaza.tipo_plaza.nombre }}</span>
+                            {% elif reserva.plaza.tipo_plaza.nombre == 'Movilidad Reducida' %}
+                                <span class="badge-tipo badge-pmr">{{ reserva.plaza.tipo_plaza.nombre }}</span>
+                            {% else %}
+                                <span class="badge-tipo badge-visita">{{ reserva.plaza.tipo_plaza.nombre }}</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Fecha">{{ reserva.fecha|date:"d/m/Y" }}</td>
+                        <td data-label="Desde">{{ reserva.hora_inicio|time:"H:i" }}</td>
+                        <td data-label="Hasta">{{ reserva.hora_fin|time:"H:i" }}</td>
+                        <td data-label="Matrícula">{{ reserva.matricula }}</td>
+                        <td data-label="Visita">
+                            {% if reserva.es_visita %}
+                                <span class="badge-visita-si">✅ Sí</span>
+                            {% else %}
+                                <span class="badge-visita-no">No</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Acciones">
+                            {% if reserva.fecha >= hoy %}
+                            <button type="button" class="btn-cancelar"
+                                    onclick="abrirModal({{ reserva.id }})">
+                                Cancelar
+                            </button>
+                            {% else %}
+                            <span style="color:#888; font-size:12px;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="text-center py-5">
+                <p style="color:#888; font-size:15px;">No tienes reservas aún.</p>
+                <a href="{% url 'nueva_reserva' %}"
+                   style="background:linear-gradient(135deg,#7EB8F7,#5a9fd4); color:white; border-radius:8px; padding:10px 20px; text-decoration:none; font-size:13px;">
+                    ➕ Crear primera reserva
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- MODAL CONFIRMACIÓN -->
+            <div id="modalCancelar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+                <div style="background:white; border-radius:16px; padding:32px; max-width:400px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+                    <h5 style="font-weight:700; margin-bottom:8px;">¿Cancelar reserva?</h5>
+                    <p style="color:#888; font-size:14px; margin-bottom:24px;">Esta acción no se puede deshacer.</p>
+                    <div class="d-flex gap-2">
+                        <button onclick="cerrarModal()"
+                                style="flex:1; padding:10px; border-radius:8px; border:1px solid #E0E0E0; background:white; color:#555; font-size:13px; font-weight:600; cursor:pointer;">
+                            Volver
+                        </button>
+                        <form id="formCancelar" method="post">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    style="flex:1; padding:10px 24px; border-radius:8px; border:none; background:#F44336; color:white; font-size:13px; font-weight:600; cursor:pointer;">
+                                Sí, cancelar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="overlay" style="display:none; position:fixed; top:64px; left:0; width:100%; height:calc(100vh - 64px); background:rgba(0,0,0,0.4); z-index:998;"></div>
+
+<script>
+    // Modal cancelar
+    function abrirModal(reservaId) {
+        document.getElementById('formCancelar').action = '/reserva/cancelar/' + reservaId + '/';
+        document.getElementById('modalCancelar').style.display = 'flex';
+    }
+    function cerrarModal() {
+        document.getElementById('modalCancelar').style.display = 'none';
+    }
+
+    // Menú lateral
+    const navbar = document.getElementById('navbar-brand');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function isMobile() { return window.innerWidth <= 768; }
+
+    function initMenu() {
+        if (isMobile()) {
+            sidebar.style.width = '0';
+            sidebar.style.minWidth = '0';
+            sidebar.style.opacity = '0';
+            sidebar.style.position = 'fixed';
+            sidebar.style.top = '64px';
+            sidebar.style.height = 'calc(100vh - 64px)';
+            sidebar.style.zIndex = '999';
+        } else {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            sidebar.style.position = 'relative';
+            sidebar.style.top = '';
+            sidebar.style.height = '';
+            sidebar.style.zIndex = '';
+        }
+    }
+
+    initMenu();
+    window.addEventListener('resize', initMenu);
+    let menuVisible = !isMobile();
+
+    navbar.addEventListener('click', function() {
+        menuVisible = !menuVisible;
+        if (menuVisible) {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            if (isMobile()) overlay.style.display = 'block';
+        } else {
+            sidebar.style.width = '0';
+            sidebar.style.minWidth = '0';
+            sidebar.style.opacity = '0';
+            overlay.style.display = 'none';
+        }
+    });
+
+    overlay.addEventListener('click', function() {
+        menuVisible = false;
+        sidebar.style.width = '0';
+        sidebar.style.minWidth = '0';
+        sidebar.style.opacity = '0';
+        overlay.style.display = 'none';
+    });
+
+    window.addEventListener('resize', function() {
+        if (!isMobile()) {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            overlay.style.display = 'none';
+            menuVisible = true;
+        }
+    });
+</script>
+
+</body>
+</html>

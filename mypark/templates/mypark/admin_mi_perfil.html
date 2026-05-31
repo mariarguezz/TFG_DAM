@@ -1,0 +1,118 @@
+{% extends 'mypark/admin_base.html' %}
+
+{% block titulo %}Mi Perfil{% endblock %}
+{% block menu_perfil %}class="active"{% endblock %}
+
+{% block estilos %}
+.card-perfil {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 32px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.avatar-perfil {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e94560, #c0392b);
+    color: white;
+    font-weight: bold;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+.campo-perfil {
+    background: #F8F8F8;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+}
+.campo-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.campo-valor {
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+}
+.badge-rol {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.badge-administrador { background:#FFF3E0; color:#E65100; }
+{% endblock %}
+
+{% block contenido %}
+<div class="card-perfil">
+
+    <!-- AVATAR -->
+    <div class="text-center">
+        {% if usuario.foto %}
+        <img src="{{ usuario.foto.url }}"
+             style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid #e94560; margin-bottom:16px;">
+        {% else %}
+        <div class="avatar-perfil">
+            {{ usuario.username|first|upper }}
+        </div>
+        {% endif %}
+
+        <!-- FORMULARIO FOTO -->
+        <form method="post" enctype="multipart/form-data" style="margin-bottom:16px;">
+            {% csrf_token %}
+            <label for="foto" style="cursor:pointer;">
+                <span style="font-size:12px; color:#e94560; font-weight:600;">
+                    ✏️ Cambiar foto
+                </span>
+            </label>
+            <input type="file" id="foto" name="foto" accept="image/*"
+                   style="display:none;"
+                   onchange="this.form.submit()">
+        </form>
+
+        <h3 class="mb-1">{{ usuario.get_full_name|default:usuario.username }}</h3>
+        <p style="color:#888; font-size:13px;">{{ usuario.email|default:"Sin email" }}</p>
+    </div>
+
+    <hr style="border-color:#F0F0F0; margin:24px 0;">
+
+    <div class="campo-perfil">
+        <div class="campo-label">Nombre de usuario</div>
+        <div class="campo-valor">{{ usuario.username }}</div>
+    </div>
+
+    <div class="campo-perfil">
+        <div class="campo-label">Nombre completo</div>
+        <div class="campo-valor">{{ usuario.get_full_name|default:"No especificado" }}</div>
+    </div>
+
+    <div class="campo-perfil">
+        <div class="campo-label">Email</div>
+        <div class="campo-valor">{{ usuario.email|default:"No especificado" }}</div>
+    </div>
+
+    <div class="campo-perfil">
+        <div class="campo-label">Rol</div>
+        <div class="campo-valor">
+            <span class="badge-rol badge-administrador">Administrador</span>
+        </div>
+    </div>
+
+    <div class="campo-perfil">
+        <div class="campo-label">Miembro desde</div>
+        <div class="campo-valor">{{ usuario.date_joined|date:"d/m/Y" }}</div>
+    </div>
+
+</div>
+{% endblock %}

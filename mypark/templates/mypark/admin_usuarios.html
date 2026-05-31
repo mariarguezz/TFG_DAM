@@ -1,0 +1,161 @@
+{% extends 'mypark/admin_base.html' %}
+
+{% block titulo %}Gestión de usuarios{% endblock %}
+{% block menu_usuarios %}class="active"{% endblock %}
+
+{% block estilos %}
+.tabla-usuarios {
+    width: 100%;
+    border-collapse: collapse;
+}
+.tabla-usuarios th {
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #e94560, #c0392b);
+    padding: 12px 16px;
+    text-align: left;
+}
+.tabla-usuarios th:first-child { border-radius: 8px 0 0 8px; }
+.tabla-usuarios th:last-child { border-radius: 0 8px 8px 0; }
+.tabla-usuarios td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #444;
+    border-bottom: 1px solid #F0F0F0;
+}
+.tabla-usuarios tr:hover td { background-color: #FFF5F5; }
+.badge-rol {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.badge-empleado { background:#E3F2FD; color:#1565C0; }
+.badge-administrador { background:#FFF3E0; color:#E65100; }
+.avatar-tabla {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7EB8F7, #5a9fd4);
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+{% endblock %}
+
+{% block contenido %}
+<div class="card-admin">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="mb-0">Gestión de usuarios</h2>
+        <div class="d-flex align-items-center gap-2">
+
+            <!-- BOTÓN FILTROS -->
+            <div class="dropdown">
+                <button class="btn btn-sm dropdown-toggle" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false"
+                        style="background:transparent; border:none; padding:8px;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="1" y="1" width="7" height="7" rx="2" fill="#e94560"/>
+                        <rect x="12" y="1" width="7" height="7" rx="2" fill="#e94560"/>
+                        <rect x="1" y="12" width="7" height="7" rx="2" fill="#e94560"/>
+                        <rect x="12" y="12" width="7" height="7" rx="2" fill="#e94560"/>
+                    </svg>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end p-3" style="width:250px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+                    <form method="get">
+                        <label style="font-size:12px; color:#888; font-weight:600;">ROL</label>
+                        <select name="rol" class="form-select form-select-sm mb-3" style="border-radius:8px;">
+                            <option value="todos" {% if rol_filtro == "todos" %}selected{% endif %}>Todos</option>
+                            <option value="empleado" {% if rol_filtro == "empleado" %}selected{% endif %}>Empleado</option>
+                            <option value="administrador" {% if rol_filtro == "administrador" %}selected{% endif %}>Administrador</option>
+                        </select>
+
+                        <label style="font-size:12px; color:#888; font-weight:600;">NOMBRE DE USUARIO</label>
+                        <input type="text" name="nombre" value="{{ nombre_filtro }}"
+                               class="form-control form-control-sm mb-3" style="border-radius:8px;"
+                               placeholder="Buscar usuario...">
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-sm flex-grow-1"
+                                    style="background:linear-gradient(135deg,#e94560,#c0392b); color:white; border-radius:8px;">
+                                Aplicar
+                            </button>
+                            <a href="{% url 'admin_usuarios' %}" class="btn btn-sm btn-outline-secondary flex-grow-1"
+                               style="border-radius:8px;">
+                                Resetear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <a href="{% url 'admin_nuevo_usuario' %}"
+               style="background:linear-gradient(135deg,#e94560,#c0392b); color:white; border-radius:8px; padding:10px 20px; text-decoration:none; font-size:13px; font-weight:600;">
+                ➕ Nuevo usuario
+            </a>
+        </div>
+    </div>
+
+    <table class="tabla-usuarios">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Nombre completo</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Miembro desde</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        {% if usuario.foto %}
+                        <img src="{{ usuario.foto.url }}"
+                             style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
+                        {% else %}
+                        <div class="avatar-tabla">{{ usuario.username|first|upper }}</div>
+                        {% endif %}
+                        <strong>{{ usuario.username }}</strong>
+                    </div>
+                </td>
+                <td>{{ usuario.get_full_name|default:"—" }}</td>
+                <td>{{ usuario.email|default:"—" }}</td>
+                <td>
+                    {% if usuario.rol == "administrador" %}
+                        <span class="badge-rol badge-administrador">Administrador</span>
+                    {% else %}
+                        <span class="badge-rol badge-empleado">Empleado</span>
+                    {% endif %}
+                </td>
+                <td>{{ usuario.date_joined|date:"d/m/Y" }}</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'admin_editar_usuario' usuario.id %}"
+                           style="background:#E3F2FD; color:#1565C0; border-radius:8px; padding:6px 14px; text-decoration:none; font-size:12px; font-weight:600;">
+                            ✏️ Editar
+                        </a>
+                        {% if usuario != request.user %}
+                        <form method="post" action="{% url 'admin_eliminar_usuario' usuario.id %}"
+                              onsubmit="return confirm('¿Seguro que quieres eliminar este usuario?')">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    style="background:#FFEBEE; color:#F44336; border:none; border-radius:8px; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer;">
+                                🗑️ Eliminar
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

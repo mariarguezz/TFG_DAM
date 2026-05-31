@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyPark — Nueva Reserva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #EEF2F7;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar-mypark {
+            background: linear-gradient(135deg, #1a6fb5, #2196F3, #7EB8F7);
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+            box-shadow: 0 4px 20px rgba(33,150,243,0.3);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #navbar-brand {
+            font-size: 22px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        #navbar-brand:hover { opacity: 0.9; }
+        .navbar-user {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        .navbar-username {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .btn-logout {
+            color: white;
+            font-size: 13px;
+            text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.2s ease;
+        }
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.30);
+            transform: scale(1.05);
+        }
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+        #sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: #FFFFFF;
+            border-right: 1px solid #E0E0E0;
+            padding-top: 20px;
+            overflow: hidden;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.08);
+            transition: width 0.4s ease, min-width 0.4s ease, opacity 0.4s ease;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 20px;
+            color: #555555;
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            border-radius: 0 8px 8px 0;
+            margin-right: 8px;
+        }
+        .sidebar a:hover {
+            background-color: #EEF2F7;
+            color: #5a9fd4;
+            border-left: 3px solid #5a9fd4;
+            padding-left: 28px;
+        }
+        .sidebar a.active {
+            color: #5a9fd4;
+            font-weight: bold;
+            border-left: 3px solid #5a9fd4;
+            background: linear-gradient(135deg, #f0f7ff, #e8f4ff);
+        }
+        #contenido-principal {
+            flex: 1;
+            padding: 24px;
+            overflow: auto;
+        }
+        .card-form {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 32px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #E0E0E0;
+            font-size: 13px;
+            padding: 10px 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #7EB8F7;
+            box-shadow: 0 0 0 3px rgba(126,184,247,0.2);
+        }
+        .btn-reservar {
+            background: linear-gradient(135deg, #7EB8F7, #5a9fd4);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+        .btn-reservar:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(90,159,212,0.4);
+        }
+        .seccion-visita {
+            background: #F8FAFF;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8F0FF;
+            display: none;
+        }
+        .seccion-visita.visible { display: block; }
+        .separador {
+            height: 1px;
+            background: #E0E0E0;
+            margin: 24px 0;
+        }
+        @media (max-width: 768px) {
+            #contenido-principal {
+                width: 100% !important;
+                flex: 1 !important;
+                padding: 16px !important;
+            }
+            .navbar-username { display: none; }
+            .card-form {
+                padding: 20px;
+                margin: 0;
+            }
+            .row { flex-direction: column; }
+            .row .col { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- BARRA DE NAVEGACIÓN -->
+<nav class="navbar-mypark">
+    <a href="{% url 'dashboard' %}" id="navbar-brand">🅿️ MyPark</a>
+    <div class="navbar-user">
+        {% if request.user.foto %}
+        <img src="{{ request.user.foto.url }}"
+             style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.5);">
+        {% else %}
+        <div class="avatar">{{ request.user.username|first|upper }}</div>
+        {% endif %}
+        <span class="navbar-username">{{ request.user.username }}</span>
+        <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+    <!-- MENÚ LATERAL -->
+    <div id="sidebar" class="sidebar">
+        <a href="{% url 'dashboard' %}">🏠 Inicio</a>
+        <a href="{% url 'mis_reservas' %}">📅 Mis reservas</a>
+        <a href="{% url 'nueva_reserva' %}" class="active">➕ Nueva reserva</a>
+        <a href="{% url 'mi_perfil' %}">👤 Mi perfil</a>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="contenido-principal">
+        <div class="card-form">
+
+            <h2 class="mb-4">Nueva reserva</h2>
+
+            {% if error %}
+            <div style="background:#FFEBEE; border-left:4px solid #F44336; border-radius:8px; padding:14px 18px; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+                <span style="font-size:20px;">⚠️</span>
+                <span style="color:#C62828; font-size:13px; font-weight:500;">{{ error }}</span>
+            </div>
+            {% endif %}
+
+            {% if success %}
+            <div style="background:#E8F5E9; border-left:4px solid #4CAF50; border-radius:8px; padding:14px 18px; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+                <span style="font-size:20px;">✅</span>
+                <span style="color:#2E7D32; font-size:13px; font-weight:500;">{{ success }}</span>
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- PLAZA -->
+                <div class="mb-3">
+                    <label class="form-label">Plaza</label>
+                    <select name="plaza" class="form-select" required>
+                        <option value="">Selecciona una plaza</option>
+                        {% for plaza in plazas %}
+                        <option value="{{ plaza.id }}">{{ plaza.numero_plaza }} — {{ plaza.tipo_plaza.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- FECHA -->
+                <div class="mb-3">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" name="fecha" class="form-control" required>
+                </div>
+
+                <!-- DESDE / HASTA -->
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label">Desde</label>
+                        <select name="hora_inicio" class="form-select" required>
+                            <option value="">Hora inicio</option>
+                            {% for hora in horas %}
+                            <option value="{{ hora }}">{{ hora }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Hasta</label>
+                        <select name="hora_fin" class="form-select" required>
+                            <option value="">Hora fin</option>
+                            {% for hora in horas %}
+                            <option value="{{ hora }}">{{ hora }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- INDICADOR DE DISPONIBILIDAD -->
+                <div id="indicador-disponibilidad" style="display:none; margin-top:8px; padding:10px 14px; border-radius:8px; font-size:13px; font-weight:500;">
+                </div>
+
+                <!-- MATRÍCULA -->
+                <div class="mb-3">
+                    <label class="form-label">Matrícula</label>
+                    <input type="text" name="matricula" class="form-control"
+                           placeholder="Ej: 1234ABC" maxlength="15" required>
+                </div>
+
+                <div class="separador"></div>
+
+                <!-- CHECKBOX VISITA -->
+                <div class="mb-3 d-flex align-items-center gap-2">
+                    <input type="checkbox" id="es_visita" name="es_visita"
+                           class="form-check-input" style="width:18px; height:18px; cursor:pointer;"
+                           onchange="toggleVisita(this)">
+                    <label for="es_visita" class="form-label mb-0" style="cursor:pointer;">
+                        ¿Es una visita externa?
+                    </label>
+                </div>
+
+                <!-- SECCIÓN VISITA -->
+                <div id="seccion-visita" class="seccion-visita mb-3">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la visita</label>
+                        <input type="text" name="nombre_visita" class="form-control"
+                               placeholder="Ej: Juan García">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">DNI de la visita <span class="text-muted" style="font-weight:400;"></span></label>
+                        <input type="text" name="dni_visita" class="form-control"
+                               placeholder="Ej: 12345678A" maxlength="9">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-reservar">Confirmar reserva</button>
+
+            </form>
+        </div>
+    </div>
+</div>
+<div id="overlay" style="display:none; position:fixed; top:64px; left:0; width:100%; height:calc(100vh - 64px); background:rgba(0,0,0,0.4); z-index:998;"></div>
+
+<script>
+    function toggleVisita(checkbox) {
+        const seccion = document.getElementById('seccion-visita');
+        if (checkbox.checked) {
+            seccion.classList.add('visible');
+        } else {
+            seccion.classList.remove('visible');
+        }
+    }
+
+    function checkDisponibilidad() {
+        const plaza = document.querySelector('select[name="plaza"]').value;
+        const fecha = document.querySelector('input[name="fecha"]').value;
+        const horaInicio = document.querySelector('select[name="hora_inicio"]').value;
+        const horaFin = document.querySelector('select[name="hora_fin"]').value;
+        const indicador = document.getElementById('indicador-disponibilidad');
+
+        if (!plaza || !fecha || !horaInicio || !horaFin) {
+            indicador.style.display = 'none';
+            return;
+        }
+
+        fetch(`/api/disponibilidad/?plaza_id=${plaza}&fecha=${fecha}&hora_inicio=${horaInicio}&hora_fin=${horaFin}`)
+            .then(response => response.json())
+            .then(data => {
+                indicador.style.display = 'block';
+                if (data.disponible === true) {
+                    indicador.style.background = '#E8F5E9';
+                    indicador.style.borderLeft = '4px solid #4CAF50';
+                    indicador.style.color = '#2E7D32';
+                    indicador.innerHTML = '✅ La plaza seleccionada está disponible en el horario seleccionado';
+                } else if (data.disponible === false) {
+                    indicador.style.background = '#FFEBEE';
+                    indicador.style.borderLeft = '4px solid #F44336';
+                    indicador.style.color = '#C62828';
+                    indicador.innerHTML = '⚠️ La plaza no está disponible en el horario seleccionado';
+                }
+            });
+    }
+
+    document.querySelector('select[name="plaza"]').addEventListener('change', checkDisponibilidad);
+    document.querySelector('input[name="fecha"]').addEventListener('change', checkDisponibilidad);
+    document.querySelector('select[name="hora_inicio"]').addEventListener('change', checkDisponibilidad);
+    document.querySelector('select[name="hora_fin"]').addEventListener('change', checkDisponibilidad);
+
+    const navbar = document.getElementById('navbar-brand');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function isMobile() { return window.innerWidth <= 768; }
+
+    function initMenu() {
+        if (isMobile()) {
+            sidebar.style.width = '0';
+            sidebar.style.minWidth = '0';
+            sidebar.style.opacity = '0';
+            sidebar.style.position = 'fixed';
+            sidebar.style.top = '64px';
+            sidebar.style.height = 'calc(100vh - 64px)';
+            sidebar.style.zIndex = '999';
+        } else {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            sidebar.style.position = 'relative';
+            sidebar.style.top = '';
+            sidebar.style.height = '';
+            sidebar.style.zIndex = '';
+        }
+    }
+
+    initMenu();
+    window.addEventListener('resize', initMenu);
+    let menuVisible = !isMobile();
+
+    navbar.addEventListener('click', function(e) {
+        e.preventDefault();
+        menuVisible = !menuVisible;
+        if (menuVisible) {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            if (isMobile()) overlay.style.display = 'block';
+        } else {
+            sidebar.style.width = '0';
+            sidebar.style.minWidth = '0';
+            sidebar.style.opacity = '0';
+            overlay.style.display = 'none';
+        }
+    });
+
+    overlay.addEventListener('click', function() {
+        menuVisible = false;
+        sidebar.style.width = '0';
+        sidebar.style.minWidth = '0';
+        sidebar.style.opacity = '0';
+        overlay.style.display = 'none';
+    });
+
+    window.addEventListener('resize', function() {
+        if (!isMobile()) {
+            sidebar.style.width = '220px';
+            sidebar.style.minWidth = '220px';
+            sidebar.style.opacity = '1';
+            overlay.style.display = 'none';
+            menuVisible = true;
+        }
+    });
+</script>
+</body>
+</html>

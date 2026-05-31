@@ -1,0 +1,122 @@
+{% extends 'mypark/admin_base.html' %}
+
+{% block titulo %}Editar usuario{% endblock %}
+{% block menu_usuarios %}class="active"{% endblock %}
+
+{% block estilos %}
+.card-form {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 32px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+}
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #E0E0E0;
+    font-size: 13px;
+    padding: 10px 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #e94560;
+    box-shadow: 0 0 0 3px rgba(233,69,96,0.15);
+}
+.btn-guardar {
+    background: linear-gradient(135deg, #e94560, #c0392b);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.btn-guardar:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(233,69,96,0.4);
+}
+{% endblock %}
+
+{% block contenido %}
+<div class="card-form">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{% url 'admin_usuarios' %}"
+           style="color:#888; text-decoration:none; font-size:13px;">
+            ← Volver
+        </a>
+        <h2 class="mb-0">Editar usuario</h2>
+    </div>
+
+    {% if error %}
+    <div style="background:#FFEBEE; border-left:4px solid #F44336; border-radius:8px; padding:14px 18px; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:20px;">⚠️</span>
+        <span style="color:#C62828; font-size:13px; font-weight:500;">{{ error }}</span>
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div style="background:#E8F5E9; border-left:4px solid #4CAF50; border-radius:8px; padding:14px 18px; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:20px;">✅</span>
+        <span style="color:#2E7D32; font-size:13px; font-weight:500;">{{ success }}</span>
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Nombre de usuario</label>
+            <input type="text" class="form-control"
+                   value="{{ usuario.username }}" disabled
+                   style="background:#F5F5F5; color:#888;">
+            <small style="color:#888; font-size:11px;">El nombre de usuario no se puede modificar</small>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label class="form-label">Nombre</label>
+                <input type="text" name="first_name" class="form-control"
+                       value="{{ usuario.first_name }}" placeholder="Ej: María">
+            </div>
+            <div class="col">
+                <label class="form-label">Apellidos</label>
+                <input type="text" name="last_name" class="form-control"
+                       value="{{ usuario.last_name }}" placeholder="Ej: Rodríguez Martínez">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control"
+                   value="{{ usuario.email }}" placeholder="Ej: usuario@empresa.com">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Rol</label>
+            <select name="rol" class="form-select">
+                <option value="empleado" {% if usuario.rol == "empleado" %}selected{% endif %}>Empleado</option>
+                <option value="administrador" {% if usuario.rol == "administrador" %}selected{% endif %}>Administrador</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Nueva contraseña <span style="color:#888; font-weight:400;">(dejar en blanco para no cambiar)</span></label>
+            <input type="password" name="password" class="form-control"
+                   placeholder="Nueva contraseña">
+        </div>
+
+        <button type="submit" class="btn-guardar">Guardar cambios</button>
+    </form>
+</div>
+{% endblock %}

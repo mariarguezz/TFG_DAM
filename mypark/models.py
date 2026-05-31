@@ -25,6 +25,7 @@ class Usuario(AbstractUser):
         ('administrador', 'Administrador'),
     ]
     rol = models.CharField(max_length=20, choices=ROL_CHOICES, default='empleado')
+    foto = models.ImageField(upload_to='fotos_perfil/', blank=True, null=True)
 
 
 class Reserva(models.Model):

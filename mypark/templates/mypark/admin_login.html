@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyPark — Acceso Administrador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .login-header p {
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
+        }
+        .badge-admin {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        .login-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #e94560;
+            background: rgba(255,255,255,0.12);
+        }
+        .form-control::placeholder { color: rgba(255,255,255,0.3); }
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #e94560, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        .btn-login:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(233,69,96,0.4);
+        }
+        .error-msg {
+            background: rgba(244,67,54,0.15);
+            border-left: 4px solid #e94560;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .link-empleado {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .link-empleado a {
+            color: rgba(255,255,255,0.4);
+            font-size: 12px;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .link-empleado a:hover { color: rgba(255,255,255,0.7); }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🅿️ MyPark</h1>
+            <span class="badge-admin">PANEL ADMINISTRADOR</span>
+            <p>Acceso restringido al personal autorizado</p>
+        </div>
+
+        <div class="login-card">
+            {% if error %}
+            <div class="error-msg">
+                ⚠️ {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" name="username" class="form-control"
+                           placeholder="Introduce tu usuario" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" name="password" class="form-control"
+                           placeholder="Introduce tu contraseña" required>
+                </div>
+                <button type="submit" class="btn-login">Acceder al panel</button>
+            </form>
+        </div>
+
+        <div class="link-empleado">
+            <a href="{% url 'login' %}">← Acceso empleados</a>
+        </div>
+    </div>
+</body>
+</html>
